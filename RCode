@@ -1,0 +1,69 @@
+##Question 1: Loading and Preprocessing the Data
+
+dataset1<-read.csv("activity.csv")
+attach(data)
+
+##Qusetion 2: What is mean total number of steps taken per day?
+data<-dataset1[!(is.na(dataset1$steps)), ]
+
+totalsteps<-aggregate(steps~date,data, sum)
+hist(dataset1$steps, breaks=20, xlab="Steps Taken", main="Total Number of Steps Per Day")
+
+stepssummary<-summarise(totalsteps, meanOfTotalSteps=mean(totalsteps$steps), medianOfTotalSteps=median(totalsteps$steps))
+print(stepssummary)
+meanOfTotalSteps medianOfTotalSteps
+1         10766.19              10765
+
+##Question 3: What is the average daily activity pattern?
+meansteps<-aggregate(steps~interval, data, mean)
+head(meansteps)
+> head(meansteps)
+interval     steps
+1        0 1.7169811
+2        5 0.3396226
+3       10 0.1320755
+4       15 0.1509434
+5       20 0.0754717
+6       25 2.0943396
+
+plot(x=meansteps$interval, y=meansteps$steps, type="1", main="Time Series Plot", ylab="Steps", xlab="Intervals")
+meansteps[grep(max(meansteps$steps), meansteps$steps), ]
+interval    steps
+104      835 206.1698
+
+##Question 4: Imputing Missing Values
+> data.frame(steps=sum(is.na(dataset1$steps)),interval=sum(is.na(dataset1$interval)), data=sum(is.na(dataset1$date)))
+steps interval data
+1  2304        0    0
+
+> Impute<-dataset1
+for(x in 1:17568) {
+  if(is.na(Impute[x, 1])==TRUE) {
+    Impute[x, 1] <- meansteps[meansteps$interval %in% Impute[x, 3], 2]
+  }
+}
+> head(Impute)
+steps       date interval
+1 1.7169811 2012-10-01        0
+2 0.3396226 2012-10-01        5
+3 0.1320755 2012-10-01       10
+4 0.1509434 2012-10-01       15
+5 0.0754717 2012-10-01       20
+6 2.0943396 2012-10-01       25
+
+Imputetotalsteps<-aggregate(steps~date, Impute, sum)
+> head(Imputetotalsteps)
+date    steps
+1 2012-10-01 10766.19
+2 2012-10-02   126.00
+3 2012-10-03 11352.00
+4 2012-10-04 12116.00
+5 2012-10-05 13294.00
+6 2012-10-06 15420.00
+
+> hist(Imputetotalsteps$steps, breaks=20, xlab="Number of Steps", main="Per Day")
+> ImputetotalstepsSum<-summarise(Imputetotalsteps, meanOfTotalSteps=mean(Imputetotalsteps$steps),medianOfTotalSteps=median(Imputetotalsteps$steps))
+> print(ImputetotalstepsSum)
+meanOfTotalSteps medianOfTotalSteps
+1         10766.19           10766.19
+
