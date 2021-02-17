@@ -428,5 +428,5 @@
  [ reached 'max' / getOption("max.print") -- omitted 243 rows ]
  
 > names(DaySteps)<-c("interval", "day", "steps")
-> xyplot(steps ~ interval | day, DaySteps, type = "l", layout = c(1, 2), 
+> xyplot(steps ~ interval | day, DaySteps, type = "l", 
 >        xlab = "Interval", ylab = "Number of Steps")
